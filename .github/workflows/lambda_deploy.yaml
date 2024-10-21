@@ -1,0 +1,26 @@
+name: deploy to lambda
+on:
+  push :
+    branches: [ main ]
+jobs:
+  deploy:
+    name: deploy lambda function
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: install zip tool
+        uses: montudor/action-zip@v1
+      - name: Create Zip file for Lamda function 
+        run: zip -r code.zip .
+      - name: AWS CLI v2 
+        uses: imehedi/actions-awscli-v2@latest
+        with:
+         args: "lambda update-function-code \
+              --function-name arn:aws:lambda:us-east-1:892374958489:function:weatherReportfunction4
+              --zip-file fileb://code.zip"
+        env:
+          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws_region: "us-east-1"
+          
